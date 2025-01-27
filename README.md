@@ -18,3 +18,34 @@ Install dependencies:
 
 ```bash
 pip install selenium webdriver-manager
+
+#Usage
+
+from yt_scp import youtube_scrape
+
+query = "Python tutorials"
+urls = youtube_scrape(query=query, max_results=5, music=False, live=False)
+for i, url in enumerate(urls, start=1):
+    print(f"Video {i}: {url}")
+
+## Music Videos Only
+
+from yt_scp import youtube_scrape
+
+query = "Vijay songs"
+urls = youtube_scrape(query=query, max_results=5, music=True, live=False)
+for i, url in enumerate(urls, start=1):
+    print(f"Music Video {i}: {url}")
+##Live Videos Only
+
+from yt_scp import youtube_scrape
+
+query = "Vijay live"
+urls = youtube_scrape(query=query, max_results=5, music=False, live=True)
+for i, url in enumerate(urls, start=1):
+    print(f"Live Video {i}: {url}")
+
+#License
+This project is licensed under the GNU General Public License v3.0. See the LICENSE file for details.
+
+
