@@ -16,8 +16,9 @@ A Python module to scrape YouTube videos based on a search query. The module all
 
 Install dependencies:
 
-```bash
-pip install selenium webdriver-manager ```
+```
+pip install selenium webdriver-manager
+```
 
 
 #Usage
