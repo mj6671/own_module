@@ -6,21 +6,10 @@ from webdriver_manager.chrome import ChromeDriverManager
 import time
 
 def youtube_scrape(query: str, max_results: int, music: bool, live: bool):
-    """
-    Scrape YouTube video URLs based on the query.
-    
-    Args:
-        query (str): The search query for YouTube.
-        max_results (int): Maximum number of results to fetch.
-        music (bool): Whether to include only music videos.
-        live (bool): Whether to include only live videos.
-    
-    Returns:
-        list: List of URLs matching the filters.
-    """
+
     # Configure Chrome options
     options = Options()
-    options.add_argument("--headless")  # Run in headless mode
+    options.add_argument("--headless")  
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
@@ -32,7 +21,7 @@ def youtube_scrape(query: str, max_results: int, music: bool, live: bool):
         # Construct the search URL
         search_url = f"https://www.youtube.com/results?search_query={query.replace(' ', '+')}"
         driver.get(search_url)
-        time.sleep(3)  # Wait for the page to load
+        time.sleep(3)  
 
         # Find video elements
         video_elements = driver.find_elements(By.CSS_SELECTOR, "ytd-video-renderer, ytd-compact-video-renderer")
