@@ -23,7 +23,8 @@ pip install selenium webdriver-manager
 
 # Usage
 
-```from yt_scp import youtube_scrape
+```
+from yt_scp import youtube_scrape
 
 query = "Python tutorials"
 urls = youtube_scrape(query=query, max_results=5, music=False, live=False)
