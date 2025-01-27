@@ -4,15 +4,19 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 import time
-#import yt_summ
 
-def youtube_scrape(query, max_results=10):
+def youtube_scrape(query: str, max_results: int, music: bool, live: bool):
     """
-    Scrapes YouTube search results for titles, descriptions, URLs, and video durations using Selenium.
+    Scrape YouTube video URLs based on the query.
     
-    :param query: Search query string.
-    :param max_results: Number of results to fetch (default is 10).
-    :return: List of URLs for videos with durations <= 10 minutes.
+    Args:
+        query (str): The search query for YouTube.
+        max_results (int): Maximum number of results to fetch.
+        music (bool): Whether to include only music videos.
+        live (bool): Whether to include only live videos.
+    
+    Returns:
+        list: List of URLs matching the filters.
     """
     # Configure Chrome options
     options = Options()
@@ -25,9 +29,8 @@ def youtube_scrape(query, max_results=10):
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     try:
-        # Construct the search URL with "news under 10 min"
-        search_query = f"{query} news under 10 min"
-        search_url = f"https://www.youtube.com/results?search_query={search_query.replace(' ', '+')}"
+        # Construct the search URL
+        search_url = f"https://www.youtube.com/results?search_query={query.replace(' ', '+')}"
         driver.get(search_url)
         time.sleep(3)  # Wait for the page to load
 
@@ -36,53 +39,34 @@ def youtube_scrape(query, max_results=10):
         results_urls = []
 
         for video in video_elements[:max_results]:
+            # Extract title and URL
             title_element = video.find_element(By.CSS_SELECTOR, "h3 a")
             title = title_element.text
             url = title_element.get_attribute("href")
             
-            # Check for regular video duration
+            # Extract duration or live status
             try:
                 duration_element = video.find_element(By.CSS_SELECTOR, "span.ytd-thumbnail-overlay-time-status-renderer")
                 duration = duration_element.text.strip()
             except:
-                duration = None  # No duration for Shorts
+                duration = None  # No duration means it might be a live video
 
-            # If the duration exists and is 10 minutes or less, or if it's a YouTube Short (no duration but acceptable)
-            if duration and "m" in duration:  # Ensure the duration contains minutes
-                minutes = int(duration.split("m")[0].strip())
-                if minutes <= 10:
+            # Check for live videos
+            is_live = "LIVE" in (duration.upper() if duration else "")
+
+            # Apply filters
+            if live and is_live:
+                results_urls.append(url)
+            elif music and not is_live:
+                # Check for music keywords in the title
+                music_keywords = ["official video", "lyrics", "song", "album"]
+                if any(keyword.lower() in title.lower() for keyword in music_keywords):
                     results_urls.append(url)
-            elif not duration:  # Handle Shorts without duration
+            elif not music and not live and not is_live:
+                # General case: include if neither music nor live is specifically requested
                 results_urls.append(url)
 
         return results_urls
 
     finally:
         driver.quit()
-
-if __name__ == "__main__":
-    query = input("Enter search query: ")
-    max_results = int(input("Enter the number of results to fetch: "))
-
-    try:
-        video_urls = youtube_scrape(query, max_results)
-        print("\nURLs of videos with durations under 10 minutes or Shorts:\n")
-        for idx, url in enumerate(video_urls, start=1):
-            print(f"{idx}. URL: {url}\n")
-        # Now you can pass `video_urls` to `yt_summ.process_videos`
-       # results = yt_summ.process_videos(video_urls)
-        
-        ## Optionally, save results to a file
-        #output_file = "transcription_results.txt"
-        #with open(output_file, "w", encoding="utf-8") as f:
-        #    for url, result in results.items():
-        #        f.write(f"Video URL: {url}\n")
-        #        f.write(f"Transcript:\n{result['transcript']}\n")
-        #        f.write(f"Sentiment Analysis:\n{result['sentiment']}\n")
-        #        f.write(f"Transcription File: {result['transcription_file']}\n")
-        #        f.write("\n---\n")
-#
-        #print(f"Results saved to {output_file}")
-
-    except Exception as e:
-        print(f"Error: {e}")
