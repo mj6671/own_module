@@ -16,10 +16,9 @@ setup(
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",  # Match your license
+        "License :: OSI Approved :: MIT License",  # Ensure this matches your LICENSE
         "Operating System :: OS Independent",
     ],
     python_requires=">=3.7",
-    license="MIT",  # Explicitly declare the license type
-    license_files=[],  # Disable auto-detection of LICENSE file
+    # Remove any line like `license_file="LICENSE"` if present
 )
